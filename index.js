@@ -5,7 +5,7 @@ const app = express();
 const PORT = 3000;
 const TARGET_URL = "https://www.eghtesadnews.com/markets/euro";
 
-// Utility to convert Persian to English numbers
+// Utility to convert Persian to English numberssss
 function convertPersianToEnglish(str) {
   const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
   return str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d).toString());
@@ -18,7 +18,7 @@ async function fetchEuroPrice() {
 
   await page.goto(TARGET_URL, { waitUntil: "domcontentloaded" });
 
-  // Wait for the table rows to appear
+  // Wait for the damned table rows to appear
   await page.waitForSelector("tbody");
 
   const data = await page.$$eval("tbody tr", rows => {
@@ -29,7 +29,7 @@ async function fetchEuroPrice() {
 
   await browser.close();
 
-  // Find the first row with 4 columns and numbers
+
   const validRow = data.find(row => row.length === 4 && row[0].match(/[۰-۹]/));
   if (!validRow) throw new Error("Euro price row not found");
 
@@ -41,7 +41,6 @@ async function fetchEuroPrice() {
   };
 }
 
-// Express route
 app.get("/euro-price", async (req, res) => {
   try {
     const raw = await fetchEuroPrice();
@@ -49,20 +48,20 @@ app.get("/euro-price", async (req, res) => {
       price: convertPersianToEnglish(raw.price),
       change: convertPersianToEnglish(raw.change),
       percentChange: convertPersianToEnglish(raw.percentChange),
-      time: raw.time, // optionally translate time if needed
+      time: raw.time,
     };
     res.json(translated);
   } catch (err) {
-    console.error("❌ Error fetching price:", err.message);
+    console.error("Error fetching price:", err.message);
     res.status(500).json({ error: "Failed to fetch euro price" });
   }
 });
 
 // Default fallback
 app.get("/", (req, res) => {
-  res.send("✅ Euro Price Scraper is running. Try /euro-price");
+  res.send("Euro Price Scraper is running. Try /euro-price");
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running at http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
